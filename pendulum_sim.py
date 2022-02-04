@@ -1,4 +1,4 @@
-# python3 pendulum_sim.py --xmlfile pendulum_2 --exportcsv result_pendulum2 --timestep 10000
+# python3 pendulum_sim.py --xmlfile pendulum_2 --exportcsv result_pendulum2 --timestep 10000 --duration 10
 import mujoco_py
 import numpy as np
 import csv
@@ -38,19 +38,25 @@ if __name__ == "__main__":
     parser.add_argument("--xmlfile", type=str, default="pendulum_2")
     parser.add_argument("--exportcsv", type=str, default="test")
     parser.add_argument("--timestep", type=int, default=10000)
+    parser.add_argument("--duration", type=int, default=50)
 
     args = parser.parse_args()
 
 
     sim, viewer = init_setup(args.xmlfile)
     observations = []
+    duration_cnt = 0
     for step in range(args.timestep):
         viewer.render()
+        duration_cnt += 1
+        duration_cnt %= args.duration
         # 特に自分からカートを動かさないのでctrlには0を入れる
         do_simulation(sim, 0, 1)
         print(step, " timestep")
         print("position", sim.data.qpos.flat.copy(), "velocity", sim.data.qvel.flat.copy()) # [スライダ-, hinge1, hinge2, hinge...]の位置, ヒンジは[-π, π]
-        observations.append(state_vector(sim).tolist())
+        # durationで決めたタイムステップごとに記録する
+        if duration_cnt % args.duration == 0:
+            observations.append(state_vector(sim).tolist())
 
     # csvファイルに出力する
     with open(args.exportcsv + ".csv", 'a', newline='') as f:
