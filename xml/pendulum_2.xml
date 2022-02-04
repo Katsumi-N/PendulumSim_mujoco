@@ -1,0 +1,40 @@
+<mujoco model="pendulum v1">
+	<compiler inertiafromgeom="true"/>
+	<default>
+		<joint armature="0" damping="0" limited="true" />
+		<!-- <geom contype="0" friction="1 0.1 0.1" rgba="0.7 0.7 0 1"/> -->
+		<!--friction=[滑り摩擦，ねじり摩擦，転がり摩擦]-->
+		<geom contype="0" rgba="0.7 0.7 0 1" friction="0 0 0" condim="1"/>
+		<tendon/>
+		<motor ctrlrange="-3 3"/>
+	</default>
+	<option gravity="0 0 -9.81" integrator="RK4" timestep="0.02"/>
+	<size nstack="3000"/>
+	<worldbody>
+		<!-- <geom name="ground" type="plane" pos="0 0 0" size="40 40 40" /> -->
+		<geom name="rail" pos="0 0 0" quat="0.707 0 0.707 0" rgba="0.3 0.3 0.7 1" size="0.02 5" type="capsule"/>
+		<body name="cart" pos="0 0 0" >
+			<joint axis="1 0 0" damping="1" limited="true" name="slider" pos="0 0 0" range="-1 1" type="slide" frictionloss="0"/>
+			<geom name="cart" pos="0 0 0" quat="0.707 0 0.707 0" size="0.05 0.05 .5" type="box" density="500" friction="0 0 0"/>
+			<body name="pole1" pos="-0.3 0 0" euler="0 30 0">
+				<joint axis="0 -1 0" name="hinge1" pos="0 0.5 0" range="-180 180" type="hinge" frictionloss="0"/>
+				<geom pos="0 0 -0.3" name="cpole1" rgba="0 0.7 0.7 1" size="0.01 0.3" type="capsule" />
+				<body name="toe1" pos="0 0 -0.6"/>
+					<geom pos="0 0 -0.6" name="ball1" size="0.05" rgba="0.9 0 0 1" type="sphere" density="1000"/> <!--sphereのサイズは半径指定-->
+			</body>
+			<body name="pole2" pos="0.3 0 0" euler="0 40 0">
+				<joint axis="0 -1 0" name="hinge2" pos="0 0.5 0" range="-180 180" type="hinge" frictionloss="0"/>
+				<geom pos="0 0 -0.3" name="cpole2" rgba="0 0.7 0.7 1" size="0.01 0.3" type="capsule" />
+				<body name="toe2" pos="0 0 -0.6"/>
+					<geom pos="0 0 -.6" name="ball2" size="0.05 0.05" rgba="0.9 0 0 1" type="sphere" density="1000"/>
+			</body>
+
+
+
+
+		</body>
+	</worldbody>
+	<actuator>
+		<motor gear="1000" joint="slider" name="slide"/>
+	</actuator>
+</mujoco>
